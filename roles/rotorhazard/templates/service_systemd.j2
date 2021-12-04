@@ -1,0 +1,12 @@
+[Unit]
+Description="RotorHazard race control"
+Documentation=https://github.com/RotorHazard/RotorHazard
+
+[Service]
+User={{ rh_user }}
+Group={{ rh_group }}
+WorkingDirectory={{ work_dir }}
+ExecStart=/usr/bin/python3 server.py
+
+[Install]
+WantedBy=multi-user.target

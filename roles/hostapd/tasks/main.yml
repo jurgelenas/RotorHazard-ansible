@@ -1,0 +1,24 @@
+---
+- name: Run the equivalent of "apt-get update" as a separate step
+  apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Install hostapd
+  package:
+    name: "hostapd"
+    state: present
+
+- name: Create hostapd config
+  template:
+    src: hostapd.conf.j2
+    dest: "/etc/hostapd/hostapd.conf"
+
+
+- name: Restart hostapd
+  become: true
+  systemd:
+    name: 'hostapd'
+    state: restarted
+    enabled: true
+    daemon_reload: yes

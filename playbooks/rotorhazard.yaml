@@ -1,0 +1,13 @@
+---
+- name: Install and configure rotorhazard
+  hosts: raspberrypi
+  become: yes
+  vars:
+    rh_domain: "racer.lan"
+    rh_ssid: Rorothazard
+    rh_wpa_passphrase: "Rorothazard"
+  roles:
+    - rotorhazard
+    - nginx
+    - dnsmasqd
+    - hostapd

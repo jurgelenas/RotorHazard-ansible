@@ -1,0 +1,104 @@
+---
+# Used only for Debian/Ubuntu installation, as the -t option for apt.
+nginx_default_release: ""
+
+# Use the official Nginx PPA for Ubuntu, and the version to use if so.
+nginx_ppa_use: false
+nginx_ppa_version: stable
+
+
+nginx_log_dir: "/var/log/nginx"
+# The name of the nginx package to install.
+nginx_package_name: "nginx"
+
+nginx_conf_template: "nginx.conf.j2"
+nginx_vhost_template: "vhost.j2"
+
+nginx_worker_processes: "{{ ansible_processor_vcpus | default(ansible_processor_count) }}"
+nginx_worker_connections: "1024"
+nginx_multi_accept: "off"
+
+nginx_error_log: "{{nginx_log_dir| default('/var/log/nginx')}}/error.log warn"
+nginx_access_log: "{{nginx_log_dir| default('/var/log/nginx')}}/access.log main buffer=16k flush=2m"
+
+nginx_sendfile: "on"
+nginx_tcp_nopush: "on"
+nginx_tcp_nodelay: "on"
+
+nginx_keepalive_timeout: "65"
+nginx_keepalive_requests: "100"
+
+nginx_server_tokens: "on"
+
+nginx_client_max_body_size: "64m"
+
+nginx_server_names_hash_bucket_size: "64"
+
+nginx_proxy_cache_path: ""
+
+nginx_extra_conf_options: ""
+# Example extra main options, used within the main nginx's context:
+#   nginx_extra_conf_options: |
+#     env VARIABLE;
+#     include /etc/nginx/main.d/*.conf;
+
+nginx_extra_http_options: ""
+# Example extra http options, printed inside the main server http config:
+#    nginx_extra_http_options: |
+#      proxy_buffering    off;
+#      proxy_set_header   X-Real-IP $remote_addr;
+#      proxy_set_header   X-Scheme $scheme;
+#      proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+#      proxy_set_header   Host $http_host;
+
+nginx_remove_default_vhost: true
+nginx_vhosts:
+- listen: "80 default_server"
+  server_name: "_"
+  root: "/opt/RotorHazard/src/server/"
+  filename: "portal.conf"
+  state: "present"
+  extra_parameters: |
+    return 302 $scheme://{{ rh_domain | default racer.lan' }}/;
+
+- listen: "80"
+  server_name: "{{ rh_domain | default racer.lan' }}"
+  root: "/opt/RotorHazard/src/server/"
+  filename: "rotorhazard.conf"
+  state: "present"
+  extra_parameters: |
+    location / {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_http_version     1.1;
+        proxy_set_header Host $host;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+
+nginx_upstreams: []
+# - name: myapp1
+#   strategy: "ip_hash" # "least_conn", etc.
+#   keepalive: 16 # optional
+#   servers: {
+#     "srv1.example.com",
+#     "srv2.example.com weight=3",
+#     "srv3.example.com"
+#   }
+
+nginx_log_format: |
+  '$remote_addr $host $remote_user [$time_local] "$request" '
+  '$status $body_bytes_sent "$http_referer" '
+  '"$http_user_agent" "$http_x_forwarded_for" $request_time'
+
+nginx_log_format_json: |
+  'escape=json' '{ "time": "$time_iso8601_p1.$millisec+$time_iso8601_p2", "requestid": "$request_id", "upstream": "$upstream_addr", "upstreamStatus": "$upstream_status", '
+                  '"upstreamConnectTime": "$upstream_connect_time", "upstreamResponseTime": "$upstream_response_time", "requestTime": "$request_time", '
+                  '"statusCode": "$status", "httpVersion": "$server_protocol", "requestMethod": "$request_method", "requestScheme": "$scheme", '
+                  '"requestHost": "$http_host", "requestUri": "$uri", "requestArgs": "$args", "ipv4": "$remote_addr", "remoteUser": "$remote_user", '
+                  '"proxy_add_x_forwarded_for": "$proxy_add_x_forwarded_for", "http_x_forwarded_for": "$http_x_forwarded_for", "realip_remote_addr": "$realip_remote_addr",'
+                  '"resSize": "$body_bytes_sent", "refererUrl": "$http_referer", "browser": "$http_user_agent"'
+
+# Modules
+nginx_modules_enabled: true
