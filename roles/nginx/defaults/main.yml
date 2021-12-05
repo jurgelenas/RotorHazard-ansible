@@ -59,10 +59,10 @@ nginx_vhosts:
   filename: "portal.conf"
   state: "present"
   extra_parameters: |
-    return 302 $scheme://{{ rh_domain | default racer.lan' }}/;
+    return 302 $scheme://{{ rh_domain | default ('racer.lan') }}/;
 
 - listen: "80"
-  server_name: "{{ rh_domain | default racer.lan' }}"
+  server_name: "{{ rh_domain | default ('racer.lan') }}"
   root: "/opt/RotorHazard/src/server/"
   filename: "rotorhazard.conf"
   state: "present"
@@ -75,6 +75,9 @@ nginx_vhosts:
         proxy_set_header Connection "upgrade";
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+    location /static/ {
+        root /opt/RotorHazard/src/server/static/;
     }
 
 nginx_upstreams: []
