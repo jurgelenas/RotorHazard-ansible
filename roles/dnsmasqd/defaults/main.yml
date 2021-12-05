@@ -10,7 +10,7 @@ no_dhcp_interfaces:
 dhcp_range: "10.5.5.2,10.5.5.60,255.255.255.192,12h"
 dhcp_options:
   - "6,10.5.5.1"
-domain: "{{ rh_domain | default racer.lan' }}"
+domain: "{{ rh_domain | default('racer.lan') }}"
 addresses:
-  - name: "{{ rh_domain | default racer.lan' }}"
+  - name: "{{ rh_domain | default('racer.lan') }}"
     value: 10.5.5.1
