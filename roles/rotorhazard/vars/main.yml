@@ -2,6 +2,13 @@
 # vars file for rotorhazard
 rh_dependencies:
   - libffi-dev
+  - python3-smbus
   - build-essential
   - python3-dev
   - python3-pip
+  - git
+  - scons
+  - swig
+  - python3-rpi.gpio
+  # https://github.com/RotorHazard/RotorHazard/blob/main/doc/Software%20Setup.md#java-support
+  - default-jdk-headless

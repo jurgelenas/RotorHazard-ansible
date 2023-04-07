@@ -1,13 +1,83 @@
 ---
-- name: Install and configure rotorhazard
-  hosts: raspberrypi
+- name: Install and configure Rotorhazard
+  hosts: all
   become: yes
   vars:
-    rh_domain: "racer.lan"
-    rh_ssid: Rorothazard
-    rh_wpa_passphrase: "Rorothazard"
+    # hostapd
+    rh_ssid: Rotorhazard
+    rh_wpa_passphrase: "rotorhazard"
+    # dnsmasqd
+    rh_domain: "rotorhazard.local"
+    # raspi-config
+    raspi_wifi_country: 'LT'
+    raspi_hostname: 'rotorhazard'
+
+    version: "4.0.0-beta.2"
+    rh_config:
+      GENERAL:
+        HTTP_PORT: 5000
+        ADMIN_USERNAME: admin
+        ADMIN_PASSWORD: rotorhazard
+        DEBUG: true
+        CORS_ALLOWED_HOSTS: '*'
+        SHUTDOWN_BUTTON_GPIOPIN: 22
+      HARDWARE:
+        I2C_BUS: 1
+      SENSORS:
+        i2c:0x40:
+          name: "Battery"
+          max_current: 0.1
+      SERIAL_PORTS:
+        - /dev/serial0
+      LED:
+        LED_COUNT: 0
+        LED_ROWS: 1
+        LED_PIN: 10
+        LED_FREQ_HZ: 800000
+        LED_DMA: 10
+        LED_INVERT: false
+        LED_CHANNEL: 0
+        PANEL_ROTATE: 0
+        INVERTED_PANEL_ROWS: false
+      LOGGING:
+        CONSOLE_LEVEL: INFO
+        SYSLOG_LEVEL: NONE
+        FILELOG_LEVEL: INFO
+        FILELOG_NUM_KEEP: 30
+        CONSOLE_STREAM: stdout
+
+    # infothrill.rpi_boot_config
+    boot_config:
+      #  The minimum value is 16, however this disables certain GPU features.
+      gpu_mem: '16'
+    boot_config_lines:
+      - "enable_uart=1"
+
+      - "dtparam=spi=on"
+      - "dtparam=i2c_arm=on"
+      - "dtparam=i2c1=on"
+      - "dtparam=i2c_baudrate=75000"
+      - "dtoverlay=miniuart-bt"
+
+      # https://github.com/RotorHazard/RotorHazard/blob/main/doc/Real%20Time%20Clock.md
+      - "dtoverlay=i2c-rtc,ds3231"
+
+      # If the Raspberry Pi in use is a Pi 3 model or older (not a Pi 4)
+      - "core_freq=250"
+
+      # If your hardware is the S32_BPill setup with shutdown button and AUX LED then add these lines:
+      # https://github.com/RotorHazard/RotorHazard/blob/v3.2.1/doc/Shutdown%20Button.md
+      - "dtoverlay=act-led,gpio=24"
+      - "dtparam=act_led_trigger=heartbeat"
+      - "dtoverlay=gpio-shutdown,gpio_pin=22,debounce=5000"
+
+    __nginx_user: 'rotorhazard'
   roles:
-    - rotorhazard
-    - nginx
-    - dnsmasqd
+    - raspi_config
     - hostapd
+    - dnsmasqd
+    - nginx
+    - fancontrol
+    - rtcsync
+    - rotorhazard
+    - infothrill.rpi_boot_config

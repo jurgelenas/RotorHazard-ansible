@@ -1,0 +1,3 @@
+---
+hostname: "{{ raspi_hostname | default('raspberrypi') }}"
+wifi_country: "{{ raspi_wifi_country | default('US') }}"

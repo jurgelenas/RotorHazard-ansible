@@ -1,0 +1,33 @@
+---
+- name: ensure fancontrol directory
+  file:
+    path: /opt/fancontrol
+    state: directory
+
+- name: Copy fan control to server
+  become: true
+  copy:
+    src: fancontrol.py
+    dest: /opt/fancontrol/fancontrol.py
+    force: true
+    owner: pi
+    group: pi
+    mode: "0644"
+
+- name: Create fancontrol systemd unit
+  become: true
+  template:
+    src: "fancontrol_systemd.j2"
+    dest: "/lib/systemd/system/fancontrol.service"
+    force: true
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Start fancontrol service
+  become: true
+  systemd:
+    name: 'fancontrol'
+    state: restarted
+    enabled: true
+    daemon_reload: yes

@@ -2,7 +2,6 @@
 interface: wlan0
 except_interfaces:
   - eth0
-  - lo
 
 no_dhcp_interfaces:
   - eth0

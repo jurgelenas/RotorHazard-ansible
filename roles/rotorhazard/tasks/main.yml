@@ -1,6 +1,4 @@
 ---
-# tasks file for rotorhazard
-
 - name: Run the equivalent of "apt-get update" as a separate step
   apt:
     update_cache: true
@@ -12,11 +10,11 @@
     state: present
   with_items: "{{ rh_dependencies }}"
 
-# - name: Create tmp directory
-#   file:
-#     path: "{{ tmp_dir }}"
-#     state: directory
-#     mode: rwx
+- name: Create tmp directory
+  file:
+    path: "{{ tmp_dir }}"
+    state: directory
+    mode: 0755
 
 - name: Add RotorHazard group
   group:
@@ -36,6 +34,8 @@
     groups:
       - dialout
       - i2c
+      - spi
+      - gpio
     append: yes
 
 - name: Create directory
@@ -46,9 +46,9 @@
     group: "{{ rh_group }}"
 
 - name: Download RotorHazard source
-  become: false
+  #  become: false
   get_url:
-    url: "https://github.com/RotorHazard/RotorHazard/archive/refs/tags/{{ version }}.tar.gz"
+    url: "https://github.com/RotorHazard/RotorHazard/archive/refs/tags/v{{ version }}.tar.gz"
     dest: "{{ tmp_dir }}/RotorHazard-{{ version }}.tar.gz"
   register: _download_source
   until: _download_source is succeeded
@@ -58,18 +58,42 @@
   check_mode: false
 
 - name: Unpack RotorHazard source
-  become: false
+  #  become: false
   unarchive:
     src: "{{ tmp_dir }}/RotorHazard-{{ version }}.tar.gz"
     dest: "{{ tmp_dir }}"
     remote_src: yes
   check_mode: false
 
-- name: Move RotorHazard source
+- name: Check if not prefixed source directory exists
+  stat:
+    path: "{{ tmp_dir }}/RotorHazard-{{ version }}/"
+  register: non_prefix_source_dir
+
+- name: Move RotorHazard source without v prefix
   copy:
+    force: true
     remote_src: true
     src: "{{ tmp_dir }}/RotorHazard-{{ version }}/"
     dest: "{{ target_dir }}/"
+    group: "{{ rh_group }}"
+    owner: "{{ rh_user }}"
+  when: non_prefix_source_dir.stat.exists and non_prefix_source_dir.stat.isdir
+
+- name: Check if not prefixed source directory exists
+  stat:
+    path: "{{ tmp_dir }}/RotorHazard-v{{ version }}/"
+  register: prefixed_source_dir
+
+- name: Move RotorHazard source with v prefix
+  copy:
+    force: true
+    remote_src: true
+    src: "{{ tmp_dir }}/RotorHazard-v{{ version }}/"
+    dest: "{{ target_dir }}/"
+    group: "{{ rh_group }}"
+    owner: "{{ rh_user }}"
+  when: prefixed_source_dir.stat.exists and prefixed_source_dir.stat.isdir
 
 - name: Install specified RotorHazard requirements
   pip:
@@ -79,6 +103,8 @@
   copy:
     content: "{{rh_config | to_nice_json}}"
     dest: "{{ work_dir }}/config.json"
+    group: "{{ rh_group }}"
+    owner: "{{ rh_user }}"
 
 - name: Create RotorHazard logs directory
   file:
@@ -90,7 +116,7 @@
 - name: Create systemd unit
   become: true
   template:
-    src: "service_systemd.j2"
+    src: "rotorhazard_systemd.j2"
     dest: "/lib/systemd/system/{{ rh_service_name }}.service"
     force: true
     owner: root

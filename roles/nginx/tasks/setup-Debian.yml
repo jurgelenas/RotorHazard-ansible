@@ -8,4 +8,3 @@
     name: "{{ nginx_package_name }}"
     state: present
     default_release: "{{ nginx_default_release }}"
-

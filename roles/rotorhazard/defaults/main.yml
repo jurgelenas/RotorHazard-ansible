@@ -14,29 +14,29 @@ rh_service_name: rotorhazard
 
 rh_config:
   GENERAL:
-      HTTP_PORT: 5000
-      ADMIN_USERNAME: admin
-      ADMIN_PASSWORD: rotorhazard
-      DEBUG: false
-      CORS_ALLOWED_HOSTS: '*'
+    HTTP_PORT: 5000
+    ADMIN_USERNAME: admin
+    ADMIN_PASSWORD: rotorhazard
+    DEBUG: false
+    CORS_ALLOWED_HOSTS: '*'
   HARDWARE:
-      I2C_BUS: 1
-  SENSORS: {}
+    I2C_BUS: 1
+  SENSORS: { }
   SERIAL_PORTS:
     - /dev/ttyS0
   LED:
-      LED_COUNT: 35
-      LED_ROWS: 5
-      LED_PIN: 10
-      LED_FREQ_HZ: 800000
-      LED_DMA: 10
-      LED_INVERT: false
-      LED_CHANNEL: 0
-      PANEL_ROTATE: 0
-      INVERTED_PANEL_ROWS: false
+    LED_COUNT: 35
+    LED_ROWS: 5
+    LED_PIN: 10
+    LED_FREQ_HZ: 800000
+    LED_DMA: 10
+    LED_INVERT: false
+    LED_CHANNEL: 0
+    PANEL_ROTATE: 0
+    INVERTED_PANEL_ROWS: false
   LOGGING:
-      CONSOLE_LEVEL: INFO
-      SYSLOG_LEVEL: NONE
-      FILELOG_LEVEL: INFO
-      FILELOG_NUM_KEEP: 30
-      CONSOLE_STREAM: stdout
+    CONSOLE_LEVEL: INFO
+    SYSLOG_LEVEL: NONE
+    FILELOG_LEVEL: INFO
+    FILELOG_NUM_KEEP: 30
+    CONSOLE_STREAM: stdout

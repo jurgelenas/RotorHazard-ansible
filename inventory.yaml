@@ -4,4 +4,7 @@ all:
     ansible_ssh_user: pi
   hosts:
     raspberrypi:
-      ansible_host: 10.5.5.1
+      ansible_host: raspberrypi.local
+# After setup use rotorhazard.local hostname
+#    rotorhazard:
+#      ansible_host: rotorhazard.local

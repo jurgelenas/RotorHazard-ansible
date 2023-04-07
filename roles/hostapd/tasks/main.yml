@@ -20,5 +20,6 @@
   systemd:
     name: 'hostapd'
     state: restarted
+    masked: no
     enabled: true
     daemon_reload: yes

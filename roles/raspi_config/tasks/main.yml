@@ -1,0 +1,15 @@
+- name: enable SPI
+  command: "raspi-config nonint do_spi 0"
+
+- name: enable I2C
+  command: "raspi-config nonint do_i2c 0"
+
+- name: enable WIFI
+  command: "raspi-config nonint do_wifi_country {{raspi_wifi_country}}"
+
+- name: enable serial
+  # disable serial console, but enable serial hardware (/dev/serial0)
+  command: "raspi-config nonint do_serial 2"
+
+- name: set hostname
+  command: "raspi-config nonint do_hostname {{raspi_hostname}}"
