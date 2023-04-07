@@ -74,6 +74,7 @@
     __nginx_user: 'rotorhazard'
   roles:
     - raspi_config
+    - dhcpd
     - hostapd
     - dnsmasqd
     - nginx

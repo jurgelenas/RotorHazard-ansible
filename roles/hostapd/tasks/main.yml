@@ -14,7 +14,6 @@
     src: hostapd.conf.j2
     dest: "/etc/hostapd/hostapd.conf"
 
-
 - name: Restart hostapd
   become: true
   systemd:

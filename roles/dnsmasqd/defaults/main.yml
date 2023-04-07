@@ -1,15 +1,8 @@
 ---
 interface: wlan0
-except_interfaces:
-  - eth0
-
-no_dhcp_interfaces:
-  - eth0
-  - lo
-dhcp_range: "10.5.5.2,10.5.5.60,255.255.255.192,12h"
-dhcp_options:
-  - "6,10.5.5.1"
+dhcp_range: "192.168.4.2,192.168.4.20,255.255.255.0,24h"
+dhcp_options: [ ]
 domain: "{{ rh_domain | default('racer.lan') }}"
 addresses:
   - name: "{{ rh_domain | default('racer.lan') }}"
-    value: 10.5.5.1
+    value: 192.168.4.1

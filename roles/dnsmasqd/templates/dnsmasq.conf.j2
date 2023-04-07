@@ -3,12 +3,6 @@ interface={{interface}}
 
 domain-needed
 
-{% for interface in except_interfaces %}
-except-interface={{ interface }}
-{% endfor%}
-{% for interface in no_dhcp_interfaces %}
-no-dhcp-interface={{ interface }}
-{% endfor%}
 dhcp-range={{ dhcp_range }}
 {% for dhcp_option in dhcp_options %}
 dhcp-option={{ dhcp_option }}
