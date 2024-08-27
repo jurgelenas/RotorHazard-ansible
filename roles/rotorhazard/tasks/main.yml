@@ -36,7 +36,14 @@
       - i2c
       - spi
       - gpio
+      - sudo
     append: yes
+
+- name: Make sudo without password for {{ rh_user }} user
+  copy:
+    dest: /etc/sudoers.d/80-rotorhazard-sudo-user
+    content: "{{ rh_user }} ALL=(ALL) NOPASSWD:ALL"
+    mode: 0440
 
 - name: Create directory
   file:
